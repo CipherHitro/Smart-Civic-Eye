@@ -31,6 +31,35 @@
   animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
 
+/* Slide up animation for modal */
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out;
+}
+
+/* Delayed pulse animations */
+.delay-100 {
+  animation-delay: 0.1s;
+}
+
+.delay-200 {
+  animation-delay: 0.2s;
+}
+
+.delay-300 {
+  animation-delay: 0.3s;
+}
+
 /* Smooth font rendering */
 body {
   -webkit-font-smoothing: antialiased;
