@@ -21,7 +21,7 @@ export const MOCK_LOCATION = {
   },
   address: {
     formattedAddress: "Connaught Place, New Delhi, Delhi 110001, India",
-    pincode: "110001",
+    pincode: "380005",
     city: "New Delhi"
   }
 };

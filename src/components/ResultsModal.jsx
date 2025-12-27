@@ -1,6 +1,10 @@
+import { useState } from 'react';
 import { X, AlertCircle, CheckCircle, Clock, Zap } from 'lucide-react';
+import { getGovernmentOfficerByPincode } from '../services/complaintService';
 
-const ResultsModal = ({ isOpen, onClose, results, isAnalyzing }) => {
+const ResultsModal = ({ isOpen, onClose, results, isAnalyzing, imageFile, onSubmitSuccess }) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
   if (!isOpen) return null;
   
   const getSeverityColor = (severity) => {
@@ -25,6 +29,45 @@ const ResultsModal = ({ isOpen, onClose, results, isAnalyzing }) => {
       return 'text-orange-600';
     }
     return 'text-blue-600';
+  };
+
+  const handleSubmitReport = async () => {
+    if (!results) {
+      alert('Missing required data');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      console.log('Fetching officer details...');
+      
+      // Fetch officer details from Firestore
+      const pincode = results.location?.address?.pincode;
+      const officerDetails = await getGovernmentOfficerByPincode(pincode);
+      
+      // Prepare complaint data for success screen
+      const complaintData = {
+        issueType: results.issue_type || 'Unknown',
+        description: results.description || '',
+        severity: results.severity || 'Unknown',
+        estimatedRepairUrgency: results.estimated_repair_urgency || 'Unknown',
+        location: results.location,
+        officerDetails: officerDetails,
+        status: 'Submitted for review',
+        reportedAt: new Date(),
+      };
+      
+      console.log('Showing success screen with data:', complaintData);
+      
+      // Call success callback to show success screen
+      if (onSubmitSuccess) {
+        onSubmitSuccess(complaintData);
+      }
+    } catch (error) {
+      console.error('Failed to fetch officer details:', error);
+      alert(`❌ Failed to fetch officer details: ${error.message}`);
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -178,12 +221,17 @@ const ResultsModal = ({ isOpen, onClose, results, isAnalyzing }) => {
 
                   {/* Action Buttons */}
                   <div className="flex flex-col gap-2 sm:gap-3 pt-1 sm:pt-2">
-                    <button className="w-full bg-linear-to-r from-blue-600 to-blue-700 text-white font-bold py-3 sm:py-4 px-4 sm:px-6 rounded-xl hover:shadow-lg transition-all text-sm sm:text-base">
-                      Submit Report to Authorities
+                    <button 
+                      onClick={handleSubmitReport}
+                      disabled={isSubmitting}
+                      className="w-full bg-linear-to-r from-blue-600 to-blue-700 text-white font-bold py-3 sm:py-4 px-4 sm:px-6 rounded-xl hover:shadow-lg transition-all text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isSubmitting ? 'Submitting...' : 'Submit Report to Authorities'}
                     </button>
                     <button 
                       onClick={onClose}
-                      className="w-full bg-slate-100 text-slate-700 font-bold py-3 sm:py-4 px-4 sm:px-6 rounded-xl hover:bg-slate-200 transition-all text-sm sm:text-base"
+                      disabled={isSubmitting}
+                      className="w-full bg-slate-100 text-slate-700 font-bold py-3 sm:py-4 px-4 sm:px-6 rounded-xl hover:bg-slate-200 transition-all text-sm sm:text-base disabled:opacity-50"
                     >
                       Capture Another
                     </button>

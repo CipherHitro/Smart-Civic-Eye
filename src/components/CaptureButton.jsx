@@ -3,6 +3,7 @@ import { Camera } from 'lucide-react';
 import { analyzeImage } from '../services/geminiService';
 import { getCurrentLocation, getAddressFromCoords } from '../services/locationService';
 import ResultsModal from './ResultsModal';
+import SuccessScreen from './SuccessScreen';
 
 const CaptureButton = () => {
   const fileInputRef = useRef(null);
@@ -10,6 +11,9 @@ const CaptureButton = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [results, setResults] = useState(null);
   const [locationData, setLocationData] = useState(null);
+  const [capturedImage, setCapturedImage] = useState(null);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [submittedComplaint, setSubmittedComplaint] = useState(null);
 
   const handleButtonClick = async () => {
     try {
@@ -39,6 +43,9 @@ const CaptureButton = () => {
     const file = event.target.files?.[0];
     if (file) {
       console.log('File selected:', file.name, file.type, file.size);
+      
+      // Store the captured image
+      setCapturedImage(file);
       
       // Open modal and start analyzing
       setIsModalOpen(true);
@@ -73,6 +80,21 @@ const CaptureButton = () => {
     setResults(null);
     setIsAnalyzing(false);
     setLocationData(null);
+    setCapturedImage(null);
+  };
+
+  const handleSubmitSuccess = (complaintData) => {
+    setIsModalOpen(false);
+    setShowSuccess(true);
+    setSubmittedComplaint(complaintData);
+  };
+
+  const handleCloseSuccess = () => {
+    setShowSuccess(false);
+    setSubmittedComplaint(null);
+    setResults(null);
+    setLocationData(null);
+    setCapturedImage(null);
   };
 
   return (
@@ -113,7 +135,16 @@ const CaptureButton = () => {
         onClose={handleCloseModal}
         results={results}
         isAnalyzing={isAnalyzing}
+        imageFile={capturedImage}
+        onSubmitSuccess={handleSubmitSuccess}
       />
+
+      {showSuccess && (
+        <SuccessScreen 
+          complaintData={submittedComplaint}
+          onClose={handleCloseSuccess}
+        />
+      )}
     </>
   );
 };
