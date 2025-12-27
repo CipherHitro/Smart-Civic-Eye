@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { Camera } from 'lucide-react';
 import { analyzeImage } from '../services/geminiService';
+import { getCurrentLocation, getAddressFromCoords } from '../services/locationService';
 import ResultsModal from './ResultsModal';
 
 const CaptureButton = () => {
@@ -8,9 +9,30 @@ const CaptureButton = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [results, setResults] = useState(null);
+  const [locationData, setLocationData] = useState(null);
 
-  const handleButtonClick = () => {
-    fileInputRef.current?.click();
+  const handleButtonClick = async () => {
+    try {
+      // First, request location permission
+      const coords = await getCurrentLocation();
+      console.log('Location obtained:', coords);
+      
+      // Get address from coordinates
+      const address = await getAddressFromCoords(coords.lat, coords.lng);
+      console.log('Address obtained:', address);
+      
+      // Store location data
+      setLocationData({
+        coordinates: coords,
+        address: address
+      });
+      
+      // If location is allowed, open camera
+      fileInputRef.current?.click();
+    } catch (error) {
+      console.error('Location error:', error);
+      alert('Location access is required to report civic issues. Please enable location services and try again.');
+    }
   };
 
   const handleFileChange = async (event) => {
@@ -24,12 +46,15 @@ const CaptureButton = () => {
       setResults(null);
 
       try {
-        // Call Gemini AI service
+        // Call Gemini AI service with location data
         const analysisResults = await analyzeImage(file);
         console.log('AI Analysis Results:', analysisResults);
         
-        // Show results
-        setResults(analysisResults);
+        // Show results with location
+        setResults({
+          ...analysisResults,
+          location: locationData
+        });
         setIsAnalyzing(false);
       } catch (error) {
         console.error('Analysis failed:', error);
@@ -47,6 +72,7 @@ const CaptureButton = () => {
     setIsModalOpen(false);
     setResults(null);
     setIsAnalyzing(false);
+    setLocationData(null);
   };
 
   return (

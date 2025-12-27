@@ -148,6 +148,34 @@ const ResultsModal = ({ isOpen, onClose, results, isAnalyzing }) => {
                     </p>
                   </div>
 
+                  {/* Location */}
+                  {results.location && (
+                    <div className="bg-green-50 border-2 border-green-200 rounded-xl sm:rounded-2xl p-3 sm:p-6">
+                      <div className="text-xs sm:text-sm font-bold text-green-600 mb-2 sm:mb-3 uppercase">
+                        📍 Location
+                      </div>
+                      <div className="space-y-2">
+                        <p className="text-slate-800 text-sm sm:text-base">
+                          {results.location.address?.formattedAddress || 'Location detected'}
+                        </p>
+                        <div className="flex gap-4 text-xs sm:text-sm text-slate-600">
+                          <span>Lat: {results.location.coordinates?.lat.toFixed(6)}</span>
+                          <span>Lng: {results.location.coordinates?.lng.toFixed(6)}</span>
+                        </div>
+                        {results.location.address?.city && (
+                          <p className="text-xs sm:text-sm text-slate-600">
+                            City: {results.location.address.city}
+                          </p>
+                        )}
+                        {results.location.address?.pincode && (
+                          <p className="text-xs sm:text-sm text-slate-600">
+                            Pincode: {results.location.address.pincode}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
                   {/* Action Buttons */}
                   <div className="flex flex-col gap-2 sm:gap-3 pt-1 sm:pt-2">
                     <button className="w-full bg-linear-to-r from-blue-600 to-blue-700 text-white font-bold py-3 sm:py-4 px-4 sm:px-6 rounded-xl hover:shadow-lg transition-all text-sm sm:text-base">
