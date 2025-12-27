@@ -2,7 +2,7 @@ import { X, AlertCircle, CheckCircle, Clock, Zap } from 'lucide-react';
 
 const ResultsModal = ({ isOpen, onClose, results, isAnalyzing }) => {
   if (!isOpen) return null;
-
+  
   const getSeverityColor = (severity) => {
     switch (severity?.toLowerCase()) {
       case 'critical':
