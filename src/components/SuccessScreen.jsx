@@ -1,7 +1,9 @@
 import { CheckCircle, Download, Share2, MapPin, AlertCircle, User } from 'lucide-react';
+import { generateGrievancePDF } from '../services/pdfService'
 
-const SuccessScreen = ({ complaintData, onClose }) => {
+const SuccessScreen = ({ complaintData, imageFile, onClose }) => {
   if (!complaintData) return null;
+    console.log(complaintData)
 
   const formatDate = (date) => {
     if (!date) return 'N/A';
@@ -15,9 +17,13 @@ const SuccessScreen = ({ complaintData, onClose }) => {
     });
   };
 
-  const handleDownloadPDF = () => {
-    // TODO: Implement PDF generation
-    alert('PDF download feature coming soon!');
+  const handleDownloadPDF = async () => {
+    try {
+      await generateGrievancePDF(complaintData, imageFile);
+    } catch (error) {
+      console.error('PDF generation failed:', error);
+      alert('Failed to generate PDF. Please try again.');
+    }
   };
 
   const handlePostOnX = () => {

@@ -52,6 +52,8 @@ const ResultsModal = ({ isOpen, onClose, results, isAnalyzing, imageFile, onSubm
         severity: results.severity || 'Unknown',
         estimatedRepairUrgency: results.estimated_repair_urgency || 'Unknown',
         location: results.location,
+        latitude: results.location?.coordinates?.lat || null,
+        longitude: results.location?.coordinates?.lng || null,
         officerDetails: officerDetails,
         status: 'Submitted for review',
         reportedAt: new Date(),
@@ -62,6 +64,7 @@ const ResultsModal = ({ isOpen, onClose, results, isAnalyzing, imageFile, onSubm
       // Call success callback to show success screen
       if (onSubmitSuccess) {
         onSubmitSuccess(complaintData);
+        setIsSubmitting(false)
       }
     } catch (error) {
       console.error('Failed to fetch officer details:', error);

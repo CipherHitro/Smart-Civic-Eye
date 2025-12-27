@@ -142,6 +142,7 @@ const CaptureButton = () => {
       {showSuccess && (
         <SuccessScreen 
           complaintData={submittedComplaint}
+          imageFile={capturedImage}
           onClose={handleCloseSuccess}
         />
       )}
