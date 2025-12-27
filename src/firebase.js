@@ -7,7 +7,7 @@ import { getAnalytics } from "firebase/analytics";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyDs6COexDv30MaIiWGo-7RIrDDmxDkuxOg",
+  apiKey: import.meta.env.VITE_FIREBASE_API,
   authDomain: "smart-civic-eye-83e60.firebaseapp.com",
   projectId: "smart-civic-eye-83e60",
   storageBucket: "smart-civic-eye-83e60.firebasestorage.app",
