@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { USE_MOCK_DATA, MOCK_AI_RESPONSE } from '../config/testConfig';
 
 // 1. Initialize Gemini
 const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
@@ -22,6 +23,14 @@ async function fileToGenerativePart(file) {
 
 // 3. The Main Function
 export async function analyzeImage(imageFile) {
+  // Return mock data during testing to save API credits
+  if (USE_MOCK_DATA) {
+    console.log('🧪 Using MOCK AI Response (testing mode)');
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    return MOCK_AI_RESPONSE;
+  }
+
   try {
     const model = genAI.getGenerativeModel({ 
       model: "gemini-3-flash-preview",

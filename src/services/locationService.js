@@ -1,6 +1,14 @@
+import { USE_MOCK_DATA, MOCK_LOCATION } from '../config/testConfig';
+
 const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
 export const getCurrentLocation = () => {
+  // Return mock location during testing to save API credits
+  if (USE_MOCK_DATA) {
+    console.log('🧪 Using MOCK Location (testing mode)');
+    return Promise.resolve(MOCK_LOCATION.coordinates);
+  }
+
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
       reject(new Error("Geolocation not supported by this browser."));
@@ -31,6 +39,12 @@ export const getCurrentLocation = () => {
 };
 
 export const getAddressFromCoords = async (lat, lng) => {
+  // Return mock address during testing to save API credits
+  if (USE_MOCK_DATA) {
+    console.log('🧪 Using MOCK Address (testing mode)');
+    return Promise.resolve(MOCK_LOCATION.address);
+  }
+
   try {
     const response = await fetch(
       `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${GOOGLE_MAPS_API_KEY}`
