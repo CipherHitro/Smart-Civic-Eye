@@ -1,8 +1,6 @@
 import jsPDF from "jspdf";
 
-/**
- * Convert image file to base64 data URL
- */
+//Convert image file to base64 data URL
 const fileToBase64 = (file) => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -55,7 +53,7 @@ export const generateGrievancePDF = async (complaintData, imageFile) => {
   doc.setFontSize(11);
   const subject = `SUBJECT: Grievance Report regarding ${complaintData.issueType} at ${complaintData.location?.address?.pincode || 'N/A'}`;
   doc.text(subject, margin, cursorY);
-  // Underline logic
+
   const textWidth = doc.getTextWidth(subject);
   doc.line(margin, cursorY + 1, margin + textWidth, cursorY + 1);
   
@@ -76,7 +74,6 @@ export const generateGrievancePDF = async (complaintData, imageFile) => {
   
   This issue poses a safety risk to the residents and commuters of this area. I request the concerned department to inspect the site and undertake necessary repairs at the earliest.`;
 
-  // Wrap text to fit page width
   const splitBody = doc.splitTextToSize(bodyText, pageWidth - (2 * margin));
   doc.text(splitBody, margin, cursorY);
   
@@ -94,7 +91,6 @@ export const generateGrievancePDF = async (complaintData, imageFile) => {
       // Convert image file to base64
       const imageData = await fileToBase64(imageFile);
       
-      // Add the image 
       doc.addImage(imageData, "JPEG", margin, cursorY, 100, 80); 
       
       // Add Location Stamp on Image
@@ -126,10 +122,9 @@ export const generateGrievancePDF = async (complaintData, imageFile) => {
   doc.setFontSize(8);
   doc.text("Generated via Smart Civic Eye App", margin, pageHeight - 10);
 
-  // --- 8. OPEN PDF in new tab (user can download from browser) ---
+  // --- 8. OPEN PDF in new tab ---
   const pdfBlob = doc.output('blob');
   const pdfUrl = URL.createObjectURL(pdfBlob);
   
-  // Open in new tab to show the PDF
   window.open(pdfUrl, '_blank');
 };
