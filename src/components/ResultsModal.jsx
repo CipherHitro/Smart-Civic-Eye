@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { X, AlertCircle, CheckCircle, Clock, Zap } from 'lucide-react';
 import { getGovernmentOfficerByPincode } from '../services/complaintService';
+import { sendOfficialEmail } from '../services/emailService';
 
 const ResultsModal = ({ isOpen, onClose, results, isAnalyzing, imageFile, onSubmitSuccess }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -45,6 +46,10 @@ const ResultsModal = ({ isOpen, onClose, results, isAnalyzing, imageFile, onSubm
       const pincode = results.location?.address?.pincode;
       const officerDetails = await getGovernmentOfficerByPincode(pincode);
       
+      if (!officerDetails) {
+        throw new Error('No officer details found for this location');
+      }
+      
       // Prepare complaint data for success screen
       const complaintData = {
         issueType: results.issue_type || 'Unknown',
@@ -59,16 +64,51 @@ const ResultsModal = ({ isOpen, onClose, results, isAnalyzing, imageFile, onSubm
         reportedAt: new Date(),
       };
       
-      console.log('Showing success screen with data:', complaintData);
+      console.log('Complaint data prepared:', complaintData);
       
-      // Call success callback to show success screen
+      // Show success screen immediately
       if (onSubmitSuccess) {
         onSubmitSuccess(complaintData);
-        setIsSubmitting(false)
       }
+      
+      // Send email to authorities in parallel (non-blocking)
+      // This runs in background without blocking the success screen
+      const lat = results.location?.coordinates?.lat;
+      const lng = results.location?.coordinates?.lng;
+      const mapLink = lat && lng 
+        ? `https://www.google.com/maps?q=${lat},${lng}`
+        : 'Location not available';
+      
+      const emailParams = {
+        to_email: officerDetails.email,
+        officer_name: officerDetails.officer_name || 'Officer',
+        ward_name: officerDetails.ward_name || 'N/A',
+        issue_type: results.issue_type || 'Unknown',
+        severity: results.severity || 'Unknown',
+        address: results.location?.address?.formattedAddress || 'Address not available',
+        pincode: pincode || 'N/A',
+        lat: lat || 'N/A',
+        lng: lng || 'N/A',
+        map_link: mapLink,
+      };
+      
+      console.log('Sending email to:', emailParams.to_email);
+      
+      // Send email asynchronously - don't wait for it
+      sendOfficialEmail(emailParams)
+        .then(() => {
+          console.log('✅ Email sent successfully to:', emailParams.to_email);
+        })
+        .catch((error) => {
+          console.error('❌ Failed to send email:', error);
+          // Email failure doesn't block the success screen
+        });
+      
+      setIsSubmitting(false);
+      
     } catch (error) {
-      console.error('Failed to fetch officer details:', error);
-      alert(`❌ Failed to fetch officer details: ${error.message}`);
+      console.error('Failed to submit report:', error);
+      alert(`❌ Failed to submit report: ${error.message}`);
       setIsSubmitting(false);
     }
   };
@@ -204,7 +244,7 @@ const ResultsModal = ({ isOpen, onClose, results, isAnalyzing, imageFile, onSubm
                         <p className="text-slate-800 text-sm sm:text-base">
                           {results.location.address?.formattedAddress || 'Location detected'}
                         </p>
-                        <div className="flex gap-4 text-xs sm:text-sm text-slate-600">
+                        {/* <div className="flex gap-4 text-xs sm:text-sm text-slate-600">
                           <span>Lat: {results.location.coordinates?.lat.toFixed(6)}</span>
                           <span>Lng: {results.location.coordinates?.lng.toFixed(6)}</span>
                         </div>
@@ -217,7 +257,7 @@ const ResultsModal = ({ isOpen, onClose, results, isAnalyzing, imageFile, onSubm
                           <p className="text-xs sm:text-sm text-slate-600">
                             Pincode: {results.location.address.pincode}
                           </p>
-                        )}
+                        )} */}
                       </div>
                     </div>
                   )}

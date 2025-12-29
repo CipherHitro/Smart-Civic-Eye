@@ -64,7 +64,7 @@ const SuccessScreen = ({ complaintData, imageFile, onClose }) => {
             </div>
             <h2 className="text-xl font-bold mb-2">Complaint Submitted Successfully!</h2>
             <p className="text-green-50 text-sm">
-              Complaint officially submitted and documented.
+              Complaint officially submitted and email sent to authorities.
             </p>
           </div>
         </div>

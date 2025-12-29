@@ -12,7 +12,7 @@ const Header = () => {
             Smart Civic Eye
           </h1>
           <p className="text-sm text-slate-600 font-medium mt-0.5">
-            Report. Track. Transform.
+            Capture. Report. Transform.
           </p>
         </div>
       </div>
