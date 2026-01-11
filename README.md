@@ -7,6 +7,10 @@
 [![Firebase](https://img.shields.io/badge/Firebase-12.7.0-orange.svg)](https://firebase.google.com/)
 [![Gemini AI](https://img.shields.io/badge/Gemini-AI-green.svg)](https://ai.google.dev/)
 
+## 🎥 Demo Video
+
+Watch the project in action: [**Smart Civic Eye Demo**](https://youtube.com/shorts/6VS9xMEot5M)
+
 ## ✨ Key Features
 
 ### 🤖 AI-Powered Analysis
