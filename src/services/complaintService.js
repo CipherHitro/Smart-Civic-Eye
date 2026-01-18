@@ -27,7 +27,9 @@ export async function getGovernmentOfficerByPincode(pincode) {
       const defaultDocSnap = await getDoc(defaultDocRef);
       
       if (defaultDocSnap.exists()) {
+        console.log(defaultDocSnap.data())
         return defaultDocSnap.data();
+
       }
       
       return null;
