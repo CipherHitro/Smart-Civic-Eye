@@ -2,7 +2,7 @@
 // Set USE_MOCK_DATA to true during testing to save API credits
 // Set to false when you want to use real APIs
 
-export const USE_MOCK_DATA = false; // Toggle this: true = mock data, false = real APIs
+export const USE_MOCK_DATA = true; // Toggle this: true = mock data, false = real APIs
 
 // Mock AI Response
 export const MOCK_AI_RESPONSE = {
